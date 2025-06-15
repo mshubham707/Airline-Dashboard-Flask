@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Dashboard</title>
+
+    <!-- Tailwind CSS CDN for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Tailwind configuration (optional, but good for extending default theme) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'], // Define Inter font
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Plotly.js CDN - Essential for interactive charts -->
+    <!-- UPDATED: Changed from plotly-latest.min.js to a specific, more recent version -->
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+    <style>
+        /* Basic override to ensure Inter font is used across the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Consistent background */
+        }
+        .container {
+            max-width: 1200px; /* Max width for content */
+        }
+        /* Crucial: Ensure Plotly's internal SVG and div elements take full available space */
+        .chart > div > .js-plotly-plot,
+        .chart > div > .js-plotly-plot > .plotly,
+        .chart > div > .js-plotly-plot > .plotly > .main-svg {
+            width: 100% !important;
+            height: 100% !important;
+            display: block; /* Ensure it behaves as a block element for sizing */
+        }
+
+        /* Added: General rule for Plotly text elements to ensure they are visible within bounds */
+        .chart .textpoint {
+            overflow: visible !important; /* Allow text to render outside clip path if necessary */
+            white-space: nowrap; /* Prevent text from wrapping */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-inter">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a class="text-xl font-bold tracking-wide hover:text-blue-300 transition duration-300" href="/">✈️ Airline Dashboard</a>
+            <!-- Optional: Add responsive navigation items here if needed -->
+        </div>
+    </nav>
+
+    <!-- Main content block -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,14 @@
+.card {
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.chart {
+    height: 100%;
+}
+
+.btn-outline-primary {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}

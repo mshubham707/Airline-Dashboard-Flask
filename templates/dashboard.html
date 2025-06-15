@@ -1,0 +1,188 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2 class="text-3xl font-semibold text-blue-700 mb-6 text-center">📊 Dashboard for {{ year }}</h2>
+
+<!-- Year navigation buttons -->
+<div class="flex flex-wrap justify-center gap-2 mb-8">
+    {# Add Home button #}
+    <a href="/" 
+       class="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 
+              hover:bg-blue-500 hover:text-white transition duration-300
+              {% if is_home %}bg-blue-600 text-white shadow-md{% endif %}">
+        Home
+    </a>
+    {% for y in available_years %}
+        <a href="/{{ y }}" 
+           class="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 
+                  hover:bg-blue-500 hover:text-white transition duration-300
+                  {% if y == year and not is_home %}bg-blue-600 text-white shadow-md{% endif %}"> {# Adjusted active state #}
+            {{ y }}
+        </a>
+    {% endfor %}
+</div>
+
+<!-- KPI Cards Section - NO CHANGES MADE HERE, as requested -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+        <h5 class="text-lg font-medium text-gray-600 mb-2">Total Revenue</h5>
+        <p class="text-4xl font-bold text-gray-800">₹ {{ "{:,.2f}".format(total_revenue | float) }} million</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+        <h5 class="text-lg font-medium text-gray-600 mb-2">Total Passengers</h5>
+        <p class="text-4xl font-bold text-gray-800">{{ "{:,.0f}".format(total_passengers) }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+        <h5 class="text-lg font-medium text-gray-600 mb-2">Total ASK</h5>
+        <p class="text-4xl font-bold text-gray-800">{{ "{:,.2f}".format(total_ask | float) }} million km</p>
+    </div>
+</div>
+
+<!-- Chart Sections -->
+<div class="grid grid-cols-1 gap-8">
+    {% if is_home %}
+    <!-- Multi-year chart (only on home page, at the top) -->
+    <div class="chart bg-white p-6 rounded-xl shadow-lg flex flex-col">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">Monthly PRASK Trend (All Years)</h3>
+        <div id="graph5" class="flex-grow w-full h-[500px] min-h-[450px]"></div>
+    </div>
+    {% endif %}
+
+    <div class="chart bg-white p-6 rounded-xl shadow-lg flex flex-col">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">Region-wise Revenue</h3>
+        <div id="graph1" class="flex-grow w-full h-[500px] min-h-[450px]"></div> 
+    </div>
+
+    <div class="chart bg-white p-6 rounded-xl shadow-lg flex flex-col">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">Market Revenue Share</h3>
+        <div id="graph2" class="flex-grow w-full h-[500px] min-h-[450px]"></div>
+    </div>
+
+    <div class="chart bg-white p-6 rounded-xl shadow-lg flex flex-col">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">Top Market by Revenue</h3>
+        <div id="graph3" class="flex-grow w-full h-[500px] min-h-[450px]"></div>
+    </div>
+
+    <div class="chart bg-white p-6 rounded-xl shadow-lg flex flex-col">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">Top Market by Passenger Count</h3>
+        <div id="graph4" class="flex-grow w-full h-[500px] min-h-[450px]"></div>
+    </div>
+</div>
+
+<script>
+    // Function to safely render a Plotly graph
+    function renderPlotlyGraph(elementId, graphDataString) {
+        if (typeof Plotly === 'undefined') {
+            console.error("Plotly.js is not loaded. Cannot render chart for element:", elementId);
+            return;
+        }
+
+        const el = document.getElementById(elementId);
+        if (!el) {
+            console.warn(`Element with ID "${elementId}" not found. Cannot render chart.`);
+            return;
+        }
+
+        let parsedGraphData;
+        try {
+            parsedGraphData = JSON.parse(graphDataString);
+            // console.log(`Debug: Parsed data for ${elementId}:`, parsedGraphData); // Keep for debugging if needed
+        } catch (e) {
+            console.error(`Error parsing JSON for elementId: ${elementId}. Raw data:`, graphDataString, `Error:`, e);
+            el.innerHTML = '<p class="text-red-500 text-center mt-4">Error loading chart data. Check console for details.</p>';
+            return;
+        }
+
+        if (parsedGraphData && parsedGraphData.data && parsedGraphData.layout) {
+            // Define a common configuration for Plotly charts
+            const plotlyConfig = {
+                responsive: true, // Make charts responsive
+                // displayModeBar: false, // Re-enabled if user wants it, previously set to false
+                // If you want to show specific buttons, you can use modeBarButtonsToRemove
+                // For example, to remove only 'send to cloud' and 'lasso select':
+                // modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d']
+            };
+
+            // Apply specific layout adjustments based on chart type or ID
+            if (!parsedGraphData.layout) {
+                parsedGraphData.layout = {};
+            }
+
+            if (elementId === 'graph1') { // Region-wise Revenue (Pie Chart)
+                // Ensure the pie chart fills more space
+                if (!parsedGraphData.layout.margin) {
+                    parsedGraphData.layout.margin = {};
+                }
+                parsedGraphData.layout.margin = { t: 50, b: 50, l: 50, r: 50 }; // Add generous margins
+                parsedGraphData.layout.autosize = true; // Ensure autosizing
+                // Adjust legend position if it overlaps
+                if (parsedGraphData.layout.legend) {
+                    parsedGraphData.layout.legend.x = 0.8; // Move legend further right
+                    parsedGraphData.layout.legend.y = 0.5; // Center legend vertically
+                } else {
+                    // If no legend object exists, create one with default position
+                    parsedGraphData.layout.legend = { x: 0.8, y: 0.5 };
+                }
+                // If there are traces for the pie chart, make sure textinfo is appropriate
+                if (parsedGraphData.data[0] && parsedGraphData.data[0].type === 'pie') {
+                    // Ensures text (percentages/labels) is visible
+                    parsedGraphData.data[0].textinfo = 'percent+label'; 
+                    parsedGraphData.data[0].insidetextfont = { size: 14, color: '#fff' }; // Font for inside text
+                    parsedGraphData.data[0].outsidetextfont = { size: 12, color: '#333' }; // Font for outside text
+                }
+
+            } else if (elementId === 'graph4') { // Top Market by Passenger Count (Bar Chart)
+                // Ensure layout.margin exists
+                if (!parsedGraphData.layout.margin) {
+                    parsedGraphData.layout.margin = {};
+                }
+                // Increase right margin for graph4 to give space for color bar/labels
+                parsedGraphData.layout.margin.r = 120; 
+                // Ensure the color bar is not overlapping
+                if (parsedGraphData.layout.coloraxis) {
+                    parsedGraphData.layout.coloraxis.colorbar = {
+                        x: 1.02, // Position slightly outside the plot area
+                        xanchor: 'left',
+                        len: 0.8 // Length of the colorbar
+                    };
+                }
+            }
+
+            Plotly.newPlot(el, parsedGraphData.data, parsedGraphData.layout, plotlyConfig);
+        } else {
+            console.warn(`Could not render graph for elementId: ${elementId}. Parsed graph data is missing 'data' or 'layout'.`, parsedGraphData);
+            el.innerHTML = '<p class="text-gray-500 text-center mt-4">Chart data incomplete or malformed.</p>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        renderPlotlyGraph('graph1', '{{ graph1 | safe }}');
+        renderPlotlyGraph('graph2', '{{ graph2 | safe }}');
+        renderPlotlyGraph('graph3', '{{ graph3 | safe }}');
+        renderPlotlyGraph('graph4', '{{ graph4 | safe }}');
+        
+        {% if is_home %}
+        renderPlotlyGraph('graph5', '{{ graph5 | safe }}');
+        {% endif %}
+
+        // Log numerical data directly for verification
+        console.log("Debug: Total Revenue:", '{{ "{:,.2f}".format(total_revenue | float) }}');
+        console.log("Debug: Total Passengers:", '{{ "{:,.0f}".format(total_passengers) }}');
+        console.log("Debug: Total ASK:", '{{ "{:,.2f}".format(total_ask | float) }}');
+    });
+
+    window.addEventListener('resize', function() {
+        if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(function() {
+            Plotly.relayout('graph1', {autosize: true});
+            Plotly.relayout('graph2', {autosize: true});
+            Plotly.relayout('graph3', {autosize: true});
+            Plotly.relayout('graph4', {autosize: true});
+            {% if is_home %}
+            Plotly.relayout('graph5', {autosize: true});
+            {% endif %}
+        }, 250);
+    });
+</script>
+
+{% endblock %}

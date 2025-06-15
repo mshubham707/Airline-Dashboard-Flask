@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.md5
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Editors
+.vscode/
+.idea/
+
+# Flask specific
+instance/
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Database (if you add one later)
+*.db
+*.sqlite
+/data/*.csv # Keep this if your CSVs are part of your core data, otherwise uncomment to ignore if they are dynamically generated or sensitive.
+            # Given your current setup, your `airline_monthly_data.csv` is *essential* for the app, so you want to keep it tracked.
+            # Only uncomment the above if you have *other* CSVs you don't want tracked (e.g., large temporary ones).
