@@ -24,18 +24,3 @@ This interactive dashboard provides key insights into airline performance, focus
 * **Frontend:** HTML, CSS (Tailwind CSS for utility-first styling)
 * **Deployment:**
 
-## Setup and Local Installation
-
-Follow these steps to get a local copy of the project up and running on your machine.
-
-### Prerequisites
-
-* Python 3.8+
-* pip (Python package installer)
-* Git
-
-### 1. Clone the Repository
-
-```bash
-git clone [https://github.com/mshubham707/Airline-Dashboard-Flask.git](https://github.com/mshubham707/Airline-Dashboard-Flask.git)
-cd Airline-Dashboard-Flask.git
