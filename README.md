@@ -22,5 +22,5 @@ This interactive dashboard provides key insights into airline performance, focus
 * **Data Analysis:** Pandas (Python library)
 * **Charting:** Plotly Express (Python charting library) and Plotly.js (JavaScript library)
 * **Frontend:** HTML, CSS (Tailwind CSS for utility-first styling)
-* **Deployment:**
+* **Deployment:** Render (https://airline-kpi-dashboard.onrender.com/)
 
