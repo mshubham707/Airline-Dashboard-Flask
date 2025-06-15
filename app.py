@@ -29,14 +29,6 @@ def home():
     fig4 = top_market_paxcount(year)    
     fig5 = monthly_trend()  # Multi-year chart (not year-specific)
     
-    # Debug prints to verify data - kept for your reference
-    print(f"--- Home Page ({year}) Data ---")
-    print(f"Revenue (INR Mn) for Region-wise Revenue (fig1): {fig1.data[0].values[:5] if fig1.data else 'N/A'}")
-    print(f"Revenue (INR Mn) for Market Revenue (fig2): {fig2.data[0].x[:5] if fig2.data else 'N/A'}")
-    print(f"Revenue (INR Mn) for Top Market Revenue (fig3): {fig3.data[0].y[:5] if fig3.data else 'N/A'}")
-    print(f"Passengers for Top Market Pax Count (fig4): {fig4.data[0].y[:5] if fig4.data else 'N/A'}")
-    print(f"Monthly PRASK for Monthly Trend (fig5): {fig5.data[0].y[:5] if fig5.data else 'N/A'}")
-    print("----------------------------")
 
     return render_template(
         "dashboard.html",
@@ -61,13 +53,6 @@ def dashboard(year):
     fig3 = top_market_revenue(year)
     fig4 = top_market_paxcount(year)
     
-    # Debug prints to verify data - kept for your reference
-    print(f"--- Dashboard Page ({year}) Data ---")
-    print(f"Revenue (INR Mn) for Region-wise Revenue (fig1): {fig1.data[0].values[:5] if fig1.data else 'N/A'}")
-    print(f"Revenue (INR Mn) for Market Revenue (fig2): {fig2.data[0].x[:5] if fig2.data else 'N/A'}")
-    print(f"Revenue (INR Mn) for Top Market Revenue (fig3): {fig3.data[0].y[:5] if fig3.data else 'N/A'}")
-    print(f"Passengers for Top Market Pax Count (fig4): {fig4.data[0].y[:5] if fig4.data else 'N/A'}")
-    print("----------------------------")
 
     return render_template(
         "dashboard.html",
